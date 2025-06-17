@@ -22,7 +22,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = ["http://localhost:3000", "https://reco-fe.vercel.app/"];
+const allowedOrigins = ["http://localhost:3000", "https://reco-fe.vercel.app"];
 
 // CORS configuration for Socket.IO
 const io = socketIo(server, {
