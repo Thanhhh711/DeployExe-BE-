@@ -22,16 +22,28 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = ["http://localhost:3000", "https://reco-fe.vercel.app"];
+
 // CORS configuration for Socket.IO
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000", // your frontend URL
-    methods: ["GET", "POST"], // allowed methods
-    credentials: true, // allows cookies or authorization headers
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
   },
 });
-
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin like mobile apps or curl
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
