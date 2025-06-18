@@ -20,22 +20,14 @@ const startDiscountOrderCronJob = require("./utils/discountOrderCron");
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app);
+const allowedOrigins =
+  process.env.NODE_ENV === "production" ? ["https://reco-fe.vercel.app"] : ["http://localhost:3000"]; // frontend local
 
-const allowedOrigins = ["https://reco-fe.vercel.app"];
-
-// CORS configuration for Socket.IO
-const io = socketIo(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
+// Express CORS
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin like mobile apps or curl
+      console.log("Request from origin:", origin);
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
@@ -44,6 +36,16 @@ app.use(
     credentials: true,
   })
 );
+
+// Socket.IO CORS
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
