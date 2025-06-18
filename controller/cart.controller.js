@@ -7,14 +7,19 @@ const getCart = async (req, res) => {
 
     const cartItems = await Cart.find({ userId }).populate("productId");
 
-    if (!cartItems.length) {
-      return res.status(404).json({ success: false, message: "Không có sản phẩm trong giỏ hàng" });
-    }
-
-    return res.json({ success: true, data: cartItems, message: "Giỏ hàng" });
+    // ✅ Trả về mảng rỗng thay vì lỗi 404
+    return res.json({
+      success: true,
+      data: cartItems,
+      message: cartItems.length ? "Giỏ hàng" : "Giỏ hàng trống",
+    });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi server",
+      error: error.message,
+    });
   }
 };
 
