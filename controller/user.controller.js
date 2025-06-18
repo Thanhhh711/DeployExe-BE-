@@ -139,7 +139,7 @@ const forgotPasswordController = async (req, res) => {
   });
 
   //  Mày thay chỗ này bằng url của client nhé
-  const resetURL = `http://localhost:3000/reset-password/${resetToken}`;
+  const resetURL = `https://reco-fe.vercel.app/reset-password/${resetToken}`;
 
   await transporter.sendMail({
     to: email,
