@@ -107,27 +107,25 @@ const addToCart = async (req, res) => {
   }
 };
 
-const deleteCartById = async (req, res) => {
+const deleteProductFromToCard = async (req, res) => {
   try {
-    const userId = req.user.id; // Xác thực người dùng
-    const cartItemId = req.params.id; // Lấy id từ URL
+    const userId = req.user.id;
+    const productId = req.params.id;
 
-    // Kiểm tra xem item có tồn tại và thuộc về user không
-    const cartItem = await Cart.findOne({ _id: cartItemId, userId });
+    const cartItem = await Cart.findOne({ productId, userId });
 
     if (!cartItem) {
       return res.status(404).json({
         success: false,
-        message: "Không tìm thấy mục giỏ hàng hoặc không có quyền truy cập",
+        message: "Không tìm thấy sản phẩm trong giỏ hàng hoặc không có quyền",
       });
     }
 
-    // Xoá item
-    await Cart.findByIdAndDelete(cartItemId);
+    await Cart.findOneAndDelete({ productId, userId });
 
     return res.json({
       success: true,
-      message: "Đã xoá mục giỏ hàng thành công",
+      message: "Đã xoá sản phẩm khỏi giỏ hàng thành công",
     });
   } catch (error) {
     console.error(error);
@@ -139,4 +137,4 @@ const deleteCartById = async (req, res) => {
   }
 };
 
-module.exports = { addToCart, getCart, deleteCart, updateCart, deleteCartById };
+module.exports = { addToCart, getCart, deleteCart, updateCart, deleteProductFromToCard };
