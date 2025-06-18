@@ -22,10 +22,10 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// const allowedOrigins =
-//   process.env.NODE_ENV === "production" ? ["https://reco-fe.vercel.app"] : ["http://localhost:3000"];
+const allowedOrigins =
+  process.env.NODE_ENV === "production" ? ["https://reco-fe.vercel.app"] : ["http://localhost:3000"];
 
-const allowedOrigins = "http://localhost:3000";
+// const allowedOrigins = "http://localhost:3000";
 //
 const io = socketIo(server, {
   cors: {
