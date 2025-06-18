@@ -76,7 +76,7 @@ const deleteCart = async (req, res) => {
     return res.json({
       success: true,
       data: cartItems,
-      message: "Da Xoa Giỏ hàng",
+      message: "Đã xóa giỏ hàng thành công",
     });
   } catch (error) {
     console.error(error);
