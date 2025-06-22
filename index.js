@@ -22,8 +22,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins =
-  process.env.NODE_ENV === "production" ? ["https://reco-fe.vercel.app"] : ["http://localhost:3000"];
+const allowedOrigins = ["https://reco-fe.vercel.app"];
 
 // const allowedOrigins = "http://localhost:3000";
 //
