@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const PayOS = require("@payos/node");
 const mongoose = require("mongoose");
 const http = require("http");
 const socketIo = require("socket.io");
@@ -14,6 +15,7 @@ const WalletRouter = require("./router/wallet.router");
 const DisCountRouter = require("./router/discount.router");
 const DashBoard = require("./router/dashbroad.router");
 const CustomRouter = require("./router/custom.router");
+const PayOSRouter = require("./router/payOS.router");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const startDiscountOrderCronJob = require("./utils/discountOrderCron");
@@ -22,9 +24,12 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = ["https://reco-fe.vercel.app"];
+// const allowedOrigins = ["https://reco-fe.vercel.app"];
 
-// const allowedOrigins = "http://localhost:3000";
+const allowedOrigins = process.env.BASE_URL_FE;
+
+console.log("allowedOrigins", allowedOrigins);
+
 //
 const io = socketIo(server, {
   cors: {
@@ -62,6 +67,7 @@ app.use("/wallet", WalletRouter);
 app.use("/discount", DisCountRouter);
 app.use("/admin", DashBoard);
 app.use("/custome", CustomRouter);
+app.use("/payOS", PayOSRouter);
 mongoose
   .connect(`mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@exe2fashion.gclrrba.mongodb.net/`)
   .then(() => {

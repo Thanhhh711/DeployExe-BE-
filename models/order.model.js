@@ -16,12 +16,12 @@ const orderSchema = new mongoose.Schema({
   feeShipping: { type: Number, required: true },
   paymentMethod: {
     type: String,
-    enum: ["Wallet", "Cash", "Stripe"],
+    enum: ["Wallet", "Cash", "Stripe", "QR"],
     required: true,
   },
   statusPayment: {
     type: String,
-    enum: ["Paid", "Failed"],
+    enum: ["Pending", "Paid", "Failed"],
     default: "Paid",
   },
   statusOrder: {
@@ -39,6 +39,12 @@ const orderSchema = new mongoose.Schema({
   finalPriceOrder: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true },
   address: { type: String, required: true },
+
+  orderCode: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 });
 
 const Order = mongoose.model("Order", orderSchema);
