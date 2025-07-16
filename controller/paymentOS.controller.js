@@ -5,7 +5,9 @@ require("dotenv").config();
 const baseUrlFE = process.env.BASE_URL_FE;
 const baseUrl = process.env.BASE_URL;
 
-const payos = new PayOS(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_API_KEY, process.env.PAYOS_CHECKSUM_KEY);
+const payos = new PayOS(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_API_KEY, process.env.PAYOS_CHECKSUM_KEY, {
+  webhookUrl: `${baseUrl}/payOS/receive-hook`,
+});
 
 const createPaymentLinkController = async (req, res) => {
   const { items, feeShipping, address } = req.body;
@@ -52,27 +54,34 @@ const createPaymentLinkController = async (req, res) => {
 const receiveHookFromPayOS = async (req, res) => {
   try {
     console.log("Webhook received:", req.body);
-    const { orderCode, status } = req.body; // orderCode từ PayOS gửi về
 
-    // Tìm đơn hàng theo orderCode
+    const payosCode = req.body.code;
+    const data = req.body.data;
+
+    const orderCode = data?.orderCode;
+    const status = payosCode === "00" ? "PAID" : "FAILED";
+
+    if (!orderCode) {
+      return res.status(400).json({ message: "Thiếu orderCode trong webhook" });
+    }
+
     const order = await Order.findOne({ orderCode });
 
     if (!order) {
       return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
     }
 
-    // Cập nhật trạng thái thanh toán
     if (status === "PAID") {
       order.statusPayment = "Paid";
-      await order.save();
-    } else if (status === "FAILED") {
+    } else {
       order.statusPayment = "Failed";
-      await order.save();
     }
+
+    await order.save();
 
     res.status(200).json({ message: "Cập nhật trạng thái thanh toán thành công" });
   } catch (err) {
-    console.error(err);
+    console.error("Lỗi webhook:", err);
     res.status(500).json({ message: "Lỗi webhook" });
   }
 };
