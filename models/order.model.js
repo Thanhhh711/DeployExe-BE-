@@ -41,7 +41,7 @@ const orderSchema = new mongoose.Schema({
   address: { type: String, required: true },
 
   orderCode: {
-    type: number,
+    type: String,
     required: true,
     unique: true,
   },
