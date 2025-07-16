@@ -29,15 +29,24 @@ const createPaymentLinkController = async (req, res) => {
     description = description.slice(0, 22) + "...";
   }
 
-  const orderCode = req.order.orderCode;
+  const orderCode = Date.now();
 
   const payosOrder = {
-    // amount: 10000,
     amount: Math.round(amount),
     description,
     orderCode,
     returnUrl: `${baseUrlFE}/payment-success`,
     cancelUrl: `${baseUrlFE}/cancel.html`,
+    extraData: JSON.stringify({
+      userId: req.user.id,
+      address,
+      items: items.map((item) => ({
+        productId: item.productId._id || item.productId,
+        quantity: item.quantity,
+      })),
+      feeShipping,
+      orderCode, // rất quan trọng để đồng bộ hóa
+    }),
   };
 
   try {
@@ -51,41 +60,79 @@ const createPaymentLinkController = async (req, res) => {
 
 const receiveHookFromPayOS = async (req, res) => {
   try {
-    console.log("Webhook received:", req.body);
+    console.log("Đã nhận webhook từ PayOS:", req.body);
 
     const payosCode = req.body.code;
     const data = req.body.data;
 
-    const orderCode = data?.orderCode;
-
-    console.log("orderCode", orderCode);
-
     const status = payosCode === "00" ? "PAID" : "FAILED";
-
-    if (!orderCode) {
-      return res.status(400).json({ message: "Thiếu orderCode trong webhook" });
+    if (status !== "PAID") {
+      return res.status(200).json({ message: "Thanh toán không thành công, bỏ qua" });
     }
 
-    const order = await Order.findOne({ orderCode });
-
-    console.log("order", order);
-
-    if (!order) {
-      return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+    const { orderCode, transactionId, extraData } = data;
+    if (!orderCode || !extraData) {
+      return res.status(400).json({ message: "Thiếu orderCode hoặc extraData trong webhook" });
     }
 
-    if (status === "PAID") {
-      order.statusPayment = "Paid";
-    } else {
-      order.statusPayment = "Failed";
+    // Kiểm tra đơn hàng đã tồn tại chưa
+    const existed = await Order.findOne({ orderCode });
+    if (existed) {
+      return res.status(200).json({ message: "Đơn hàng đã được tạo trước đó" });
     }
 
-    await order.save();
+    // Parse extraData từ chuỗi JSON
+    const parsedExtraData = JSON.parse(extraData);
+    const { userId, address, feeShipping, items } = parsedExtraData;
 
-    res.status(200).json({ message: "Cập nhật trạng thái thanh toán thành công" });
+    let totalPrice = 0;
+    const orderItems = [];
+
+    for (const item of items) {
+      const product = await Product.findById(item.productId);
+      if (!product || typeof product.price !== "number") continue;
+      if (product.stock < item.quantity) continue;
+
+      // Trừ tồn kho
+      product.stock -= item.quantity;
+      await product.save();
+
+      totalPrice += product.price * item.quantity;
+
+      orderItems.push({
+        productId: product._id,
+        quantity: item.quantity,
+      });
+    }
+
+    // Tính tổng giảm giá
+    const discountTotal = orderItems.reduce((total, item) => {
+      const goc = items.find((i) => i.productId.toString() === item.productId.toString());
+      const price = goc?.price ?? 0;
+      const discount = (goc?.discount ?? 0) / 100;
+      return total + price * discount * item.quantity;
+    }, 0);
+
+    const finalPriceOrder = totalPrice - discountTotal + feeShipping;
+
+    await Order.create({
+      userId,
+      items: orderItems,
+      address,
+      feeShipping,
+      orderCode,
+      transactionId,
+      totalPrice,
+      finalPriceOrder,
+      paymentMethod: "QR",
+      statusPayment: "Đã thanh toán",
+      statusOrder: "Đang xử lý",
+    });
+
+    res.status(200).json({ message: "Tạo đơn hàng thành công sau khi thanh toán" });
   } catch (err) {
-    console.error("Lỗi webhook:", err);
-    res.status(500).json({ message: "Lỗi webhook" });
+    console.error("Lỗi khi xử lý webhook:", err);
+    res.status(500).json({ message: "Lỗi hệ thống khi xử lý webhook" });
   }
 };
 
