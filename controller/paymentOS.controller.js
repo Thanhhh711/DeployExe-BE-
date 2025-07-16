@@ -35,7 +35,7 @@ const createPaymentLinkController = async (req, res) => {
     const paymentLink = await payos.createPaymentLink(payosOrder);
     res.status(200).json({ checkoutUrl: paymentLink.checkoutUrl });
   } catch (err) {
-    console.error(err);
+    console.error("err", err);
     res.status(500).json({ message: "Tạo link thanh toán thất bại" });
   }
 };
