@@ -125,8 +125,8 @@ const receiveHookFromPayOS = async (req, res) => {
       totalPrice,
       finalPriceOrder,
       paymentMethod: "QR",
-      statusPayment: "Đã thanh toán",
-      statusOrder: "Đang xử lý",
+      statusPayment: "Paid",
+      statusOrder: "Processing",
     });
 
     res.status(200).json({ message: "Tạo đơn hàng thành công sau khi thanh toán" });
