@@ -32,7 +32,8 @@ const createPaymentLinkController = async (req, res) => {
   const orderCode = Date.now(); // Hoặc UUID cũng được
 
   const payosOrder = {
-    amount: Math.round(amount),
+    amount: 100000,
+    // amount: Math.round(amount),
     description,
     orderCode,
     returnUrl: `${baseUrlFE}/success.html`,
