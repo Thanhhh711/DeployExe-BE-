@@ -87,7 +87,6 @@ const receiveHookFromPayOS = async (req, res) => {
     console.error("Lỗi webhook:", err);
     res.status(500).json({ message: "Lỗi webhook" });
   }
-  x;
 };
 
 module.exports = { createPaymentLinkController, receiveHookFromPayOS };
