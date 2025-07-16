@@ -5,7 +5,9 @@ require("dotenv").config();
 const baseUrlFE = process.env.BASE_URL_FE;
 const baseUrl = process.env.BASE_URL;
 
-const payos = new PayOS(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_API_KEY, process.env.PAYOS_CHECKSUM_KEY);
+const payos = new PayOS(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_API_KEY, process.env.PAYOS_CHECKSUM_KEY, {
+  webhookUrl: `${baseUrl}/payOS/receive-hook`,
+});
 
 const createPaymentLinkController = async (req, res) => {
   const { items, feeShipping, address } = req.body;
