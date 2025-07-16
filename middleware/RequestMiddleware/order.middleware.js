@@ -1,4 +1,5 @@
 const Order = require("../../models/order.model");
+const Product = require("../../models/product.model");
 
 const getOrderByIdForPayOs = async (req, res, next) => {
   const { orderId } = req.params;
@@ -26,7 +27,7 @@ const createOrderMiddleware = async (req, res, next) => {
     const items = [];
 
     for (const item of cartItems) {
-      const product = item.productId;
+      const product = await Product.findById(item.productId._id || item.productId);
 
       if (!product || typeof product.price !== "number") {
         return res.status(400).json({ message: "Sản phẩm không hợp lệ", success: false });
