@@ -1,5 +1,6 @@
 const PayOS = require("@payos/node");
 const Order = require("../models/order.model");
+const Product = require("../models/product.model");
 require("dotenv").config();
 
 const baseUrlFE = process.env.BASE_URL_FE;
@@ -34,7 +35,6 @@ const createPaymentLinkController = async (req, res) => {
   const payosOrder = {
     amount: Math.round(amount),
     description,
-    orderCode,
     returnUrl: `${baseUrlFE}/payment-success`,
     cancelUrl: `${baseUrlFE}/cancel.html`,
     extraData: JSON.stringify({
@@ -103,6 +103,10 @@ const receiveHookFromPayOS = async (req, res) => {
         productId: product._id,
         quantity: item.quantity,
       });
+    }
+
+    if (orderItems.length === 0) {
+      return res.status(400).json({ message: "Tất cả sản phẩm đều không hợp lệ hoặc hết hàng" });
     }
 
     // Tính tổng giảm giá
