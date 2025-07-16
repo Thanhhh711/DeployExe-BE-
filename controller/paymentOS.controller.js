@@ -36,7 +36,7 @@ const createPaymentLinkController = async (req, res) => {
     // amount: Math.round(amount),
     description,
     orderCode,
-    returnUrl: `${baseUrlFE}/success.html`,
+    returnUrl: `${baseUrlFE}/payment-success`,
     cancelUrl: `${baseUrlFE}/cancel.html`,
   };
 
