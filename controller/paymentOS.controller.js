@@ -32,8 +32,8 @@ const createPaymentLinkController = async (req, res) => {
   const orderCode = req.order.orderCode;
 
   const payosOrder = {
-    amount: 10000,
-    // amount: Math.round(amount),
+    // amount: 10000,
+    amount: Math.round(amount),
     description,
     orderCode,
     returnUrl: `${baseUrlFE}/payment-success`,
