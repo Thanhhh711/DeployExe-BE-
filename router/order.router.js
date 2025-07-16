@@ -8,6 +8,7 @@ const {
   getTopSellingProductsController,
   getOrderById,
   addOrderForOne,
+  updateOrderStatusCancel,
 } = require("../controller/order.controller");
 
 const router = express.Router();
@@ -24,4 +25,5 @@ router.get("/:orderId", authenticateToken, getOrderById);
 // router.delete("/delete/:id", authenticateToken, deleteOrderById);
 
 router.get("/topSelling", authenticateToken, authorizeRole("admin"), getTopSellingProductsController);
+router.post("/update-status-cancel", updateOrderStatusCancel);
 module.exports = router;

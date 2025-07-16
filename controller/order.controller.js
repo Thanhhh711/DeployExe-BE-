@@ -369,6 +369,34 @@ const getOrderById = async (req, res) => {
   }
 };
 
+const updateOrderStatusCancel = async (req, res) => {
+  try {
+    const { orderCode } = req.body;
+
+    if (!orderCode) {
+      return res.status(400).json({ message: "Thiếu mã đơn hàng (orderCode)" });
+    }
+
+    const order = await Order.findOne({ orderCode });
+
+    if (!order) {
+      return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+    }
+
+    if (order.statusPayment === "Paid") {
+      return res.status(400).json({ message: "Đơn hàng đã thanh toán, không thể hủy" });
+    }
+
+    order.statusPayment = "Failed";
+    await order.save();
+
+    res.status(200).json({ message: "Cập nhật trạng thái thanh toán: Failed" });
+  } catch (error) {
+    console.error("Lỗi cập nhật trạng thái hủy:", error);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
 module.exports = {
   addOrder,
   getAllOrder,
@@ -377,4 +405,5 @@ module.exports = {
   getTopSellingProductsController,
   getOrderById,
   addOrderForOne,
+  updateOrderStatusCancel,
 };
