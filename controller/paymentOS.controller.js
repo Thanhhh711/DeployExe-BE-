@@ -8,6 +8,7 @@ const baseUrl = process.env.BASE_URL;
 
 const payos = new PayOS(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_API_KEY, process.env.PAYOS_CHECKSUM_KEY);
 
+ 
 const createPaymentLinkController = async (req, res) => {
   const { items, feeShipping, address } = req.body;
 
@@ -21,33 +22,24 @@ const createPaymentLinkController = async (req, res) => {
     }, 0) + feeShipping;
 
   // Tạo mô tả rút gọn
-  let description = `${items[0].productId.name} x${items[0].quantity}`;
+  let description = ${items[0].productId.name} x${items[0].quantity};
   if (items.length > 1) {
-    description += ` và ${items.length - 1} sản phẩm khác`;
+    description +=  và ${items.length - 1} sản phẩm khác;
   }
 
   if (description.length > 25) {
     description = description.slice(0, 22) + "...";
   }
 
-  const orderCode = Date.now();
+  const orderCode = req.order.orderCode;
 
   const payosOrder = {
+    // amount: 10000,
     amount: Math.round(amount),
     description,
     orderCode,
-    returnUrl: `${baseUrlFE}/payment-success`,
-    cancelUrl: `${baseUrlFE}/cancel.html`,
-    extraData: JSON.stringify({
-      userId: req.user.id,
-      address,
-      items: items.map((item) => ({
-        productId: item.productId._id || item.productId,
-        quantity: item.quantity,
-      })),
-      feeShipping,
-      orderCode, // rất quan trọng để đồng bộ hóa
-    }),
+    returnUrl: ${baseUrlFE}/payment-success,
+    cancelUrl: ${baseUrlFE}/cancel.html,
   };
 
   try {
