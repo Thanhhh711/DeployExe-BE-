@@ -39,7 +39,7 @@ const createOrderMiddleware = async (req, res, next) => {
 
     const finalPriceOrder = totalPrice - discountTotal + feeShipping;
 
-    const orderCode = Date.now().toString();
+    const orderCode = Date.now();
 
     const order = await Order.create({
       userId,
