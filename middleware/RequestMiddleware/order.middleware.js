@@ -18,7 +18,8 @@ const getOrderByIdForPayOs = async (req, res, next) => {
 };
 
 const createOrderMiddleware = async (req, res, next) => {
-  const { items, feeShipping, address, userId } = req.body;
+  const { items, feeShipping, address } = req.body;
+  const userId = req.user.id;
   console.log("items:", items);
   console.log("feeShipping:", feeShipping);
   console.log("address:", address);
