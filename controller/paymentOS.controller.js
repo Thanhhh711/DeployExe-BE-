@@ -35,6 +35,7 @@ const createPaymentLinkController = async (req, res) => {
   const payosOrder = {
     amount: Math.round(amount),
     description,
+    orderCode,
     returnUrl: `${baseUrlFE}/payment-success`,
     cancelUrl: `${baseUrlFE}/cancel.html`,
     extraData: JSON.stringify({
