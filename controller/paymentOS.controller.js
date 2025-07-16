@@ -32,7 +32,7 @@ const createPaymentLinkController = async (req, res) => {
   const orderCode = Date.now(); // Hoặc UUID cũng được
 
   const payosOrder = {
-    amount: 100000,
+    amount: 10000,
     // amount: Math.round(amount),
     description,
     orderCode,
