@@ -388,6 +388,7 @@ const updateOrderStatusCancel = async (req, res) => {
     }
 
     order.statusPayment = "Failed";
+    order.statusOrder = "Cancel";
     await order.save();
 
     res.status(200).json({ message: "Cập nhật trạng thái thanh toán: Failed" });

@@ -24,6 +24,7 @@ const orderSchema = new mongoose.Schema({
     enum: ["Pending", "Paid", "Failed"],
     default: "Paid",
   },
+
   statusOrder: {
     type: String,
     enum: ["Processing", "Shipping", "Done", "Refund Approved", "Cancel", "Refund Requested", "Refund Rejected"],
