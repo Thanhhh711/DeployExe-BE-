@@ -10,7 +10,7 @@ const payos = new PayOS(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_API_KEY, 
 const createPaymentLinkController = async (req, res) => {
   const { items, feeShipping, address } = req.body;
 
-  // Tính amount và description
+  // Tính amount
   const amount =
     items.reduce((total, item) => {
       const price = item.productId.price ?? 0;
@@ -19,7 +19,15 @@ const createPaymentLinkController = async (req, res) => {
       return total + discountedPrice * item.quantity;
     }, 0) + feeShipping;
 
-  const description = items.map((item) => `${item.productId.name} x${item.quantity}`).join(", ");
+  // Tạo mô tả rút gọn
+  let description = `${items[0].productId.name} x${items[0].quantity}`;
+  if (items.length > 1) {
+    description += ` và ${items.length - 1} sản phẩm khác`;
+  }
+
+  if (description.length > 25) {
+    description = description.slice(0, 22) + "...";
+  }
 
   const orderCode = Date.now(); // Hoặc UUID cũng được
 
@@ -35,7 +43,7 @@ const createPaymentLinkController = async (req, res) => {
     const paymentLink = await payos.createPaymentLink(payosOrder);
     res.status(200).json({ checkoutUrl: paymentLink.checkoutUrl });
   } catch (err) {
-    console.error("err", err);
+    console.error("err", err?.response?.data || err);
     res.status(500).json({ message: "Tạo link thanh toán thất bại" });
   }
 };
