@@ -3,9 +3,14 @@ const Order = require("../models/order.model");
 
 const baseUrlFE = process.env.BASE_URL_FE;
 const baseUrl = process.env.BASE_URL;
-const payos = new PayOS(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_API_KEY, process.env.PAYOS_CHECKSUM_KEY, {
-  webhookUrl: `${baseUrl}/payOS/receive-hook`,
-});
+const payos = new PayOS(
+  "f7116ed8-6a36-41fa-8eee-a8e3b5edb0b1",
+  "235a888d-267e-4459-912a-24d025df0444",
+  "314843c8521f4fd4d25055c853285892110cdf46bf53c2ca6b1659c29fad81ce",
+  {
+    webhookUrl: `${baseUrl}/payOS/receive-hook`,
+  }
+);
 
 const createPaymentLinkController = async (req, res) => {
   const { items, feeShipping, address } = req.body;
