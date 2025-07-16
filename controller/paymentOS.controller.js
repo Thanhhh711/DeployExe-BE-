@@ -57,6 +57,9 @@ const receiveHookFromPayOS = async (req, res) => {
     const data = req.body.data;
 
     const orderCode = data?.orderCode;
+
+    console.log("orderCode", orderCode);
+
     const status = payosCode === "00" ? "PAID" : "FAILED";
 
     if (!orderCode) {
@@ -64,6 +67,8 @@ const receiveHookFromPayOS = async (req, res) => {
     }
 
     const order = await Order.findOne({ orderCode });
+
+    console.log("order", order);
 
     if (!order) {
       return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
@@ -82,6 +87,7 @@ const receiveHookFromPayOS = async (req, res) => {
     console.error("Lỗi webhook:", err);
     res.status(500).json({ message: "Lỗi webhook" });
   }
+  x;
 };
 
 module.exports = { createPaymentLinkController, receiveHookFromPayOS };
