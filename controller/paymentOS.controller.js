@@ -4,9 +4,9 @@ const Order = require("../models/order.model");
 const baseUrlFE = process.env.BASE_URL_FE;
 const baseUrl = process.env.BASE_URL;
 const payos = new PayOS(
-  "f7116ed8-6a36-41fa-8eee-a8e3b5edb0b1",
-  "235a888d-267e-4459-912a-24d025df0444",
-  "314843c8521f4fd4d25055c853285892110cdf46bf53c2ca6b1659c29fad81ce",
+  "f7116ed8-6a36-41fa-8eee-a8e3b5edb0b1", // ✅ Client ID (Partner Code)
+  "235a888d-267e-4459-912a-24d025df0444", // ✅ API Key
+  "314843c8521f4fd4d25055c853285892110cdf46bf53c2ca6b1659c29fad81ce", // ✅ Checksum Key
   {
     webhookUrl: `${baseUrl}/payOS/receive-hook`,
   }
