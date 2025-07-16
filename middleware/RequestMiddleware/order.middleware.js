@@ -19,7 +19,10 @@ const getOrderByIdForPayOs = async (req, res, next) => {
 
 const createOrderMiddleware = async (req, res, next) => {
   const { items, feeShipping, address, userId } = req.body;
-
+  console.log("items:", items);
+  console.log("feeShipping:", feeShipping);
+  console.log("address:", address);
+  console.log("userId:", userId);
   try {
     const statusOrder = "Processing";
     const totalPrice = items.reduce((total, item) => {
