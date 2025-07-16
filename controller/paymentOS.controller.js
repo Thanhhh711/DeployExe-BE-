@@ -29,7 +29,7 @@ const createPaymentLinkController = async (req, res) => {
     description = description.slice(0, 22) + "...";
   }
 
-  const orderCode = Date.now(); // Hoặc UUID cũng được
+  const orderCode = req.order.orderCode;
 
   const payosOrder = {
     amount: 10000,
