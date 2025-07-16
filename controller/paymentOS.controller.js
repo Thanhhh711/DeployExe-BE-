@@ -129,6 +129,7 @@ const createPaymentLinkController = async (req, res) => {
     extraData: JSON.stringify({
       userId: req.user.id,
       address,
+      orderCode,
       feeShipping,
       items: items.map((item) => ({
         productId: item.productId._id || item.productId,
