@@ -35,7 +35,7 @@ router.put(
   "/update/:id",
   authenticateToken,
   authorizeRole("admin"),
-  upload.array("images", 5),
+  upload.array("pictures", 5),
   productValidator,
   updateProduct
 );

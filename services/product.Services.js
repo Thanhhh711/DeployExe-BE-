@@ -89,7 +89,7 @@ const updateProductService = async (productId, productData, userId, files = []) 
       throw new Error("Không tìm thấy người dùng này");
     }
 
-    let { name, description, price, rating, location, stock, categories, images } = productData;
+    let { name, description, price, rating, location, stock, categories, pictures } = productData;
 
     let discountId = null;
 
@@ -126,7 +126,7 @@ const updateProductService = async (productId, productData, userId, files = []) 
     // }
     // const finalPrice = calculateFinalPrice({ price, currentDiscount: discountId });
 
-    let imageUrls = images || []; // ảnh cũ
+    let imageUrls = pictures || []; // ảnh cũ
     if (files.length > 0) {
       const uploadResults = await Promise.all(
         files.map(async (file) => {
