@@ -17,7 +17,7 @@ const productValidator = [
 
   body("location").optional().isString().withMessage("Địa điểm phải là chuỗi"),
 
-  body("pictures").optional().isString().withMessage("Ảnh phải là chuỗi"),
+  // body("pictures").optional().isString().withMessage("Ảnh phải là chuỗi"),
 
   body("stock").optional().isInt({ min: 0 }).withMessage("Tồn kho phải là số nguyên không âm"),
 
