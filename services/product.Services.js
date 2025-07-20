@@ -6,7 +6,7 @@ const { cloudinary } = require("../utils/cloudinary");
 const { getDataUri } = require("../utils/datauri");
 const { calculateFinalPrice } = require("../utils/utils");
 
-const createProductService = async (productData, file) => {
+const createProductService = async (productData, files) => {
   try {
     const { name, description, price, rating, location, stock, categories } = productData;
     const profilePicture = file;
@@ -79,7 +79,7 @@ const createProductService = async (productData, file) => {
   }
 };
 
-const updateProductService = async (productId, productData, userId, file) => {
+const updateProductService = async (productId, productData, userId, files = []) => {
   try {
     let userEdit = await User.findById(userId).select("-password");
 
@@ -89,7 +89,7 @@ const updateProductService = async (productId, productData, userId, file) => {
       throw new Error("Không tìm thấy người dùng này");
     }
 
-    let { name, description, price, rating, location, stock, categories, profilePicture } = productData;
+    let { name, description, price, rating, location, stock, categories, images } = productData;
 
     let discountId = null;
 
@@ -110,21 +110,33 @@ const updateProductService = async (productId, productData, userId, file) => {
     //   discountId = discount._id;
     // }
 
-    if (!profilePicture) {
-      if (file && typeof file !== "string") {
-        const fileUri = getDataUri(file);
-        const cloudResponse = await cloudinary.uploader.upload(fileUri);
-        profilePicture = cloudResponse.url;
-      }
+    // if (!profilePicture) {
+    //   if (file && typeof file !== "string") {
+    //     const fileUri = getDataUri(file);
+    //     const cloudResponse = await cloudinary.uploader.upload(fileUri);
+    //     profilePicture = cloudResponse.url;
+    //   }
 
-      // ✅ Nếu là string URL (ảnh cũ)
-      else if (typeof file === "string" && file.startsWith("http")) {
-        profilePicture = file;
-      } else {
-        throw new Error("Không thể thêm ảnh sản phẩm.");
-      }
-    }
+    //   // ✅ Nếu là string URL (ảnh cũ)
+    //   else if (typeof file === "string" && file.startsWith("http")) {
+    //     profilePicture = file;
+    //   } else {
+    //     throw new Error("Không thể thêm ảnh sản phẩm.");
+    //   }
+    // }
     // const finalPrice = calculateFinalPrice({ price, currentDiscount: discountId });
+
+    let imageUrls = images || []; // ảnh cũ
+    if (files.length > 0) {
+      const uploadResults = await Promise.all(
+        files.map(async (file) => {
+          const fileUri = getDataUri(file);
+          const cloudResponse = await cloudinary.uploader.upload(fileUri);
+          return cloudResponse.url;
+        })
+      );
+      imageUrls = [...imageUrls, ...uploadResults]; // nối ảnh mới với ảnh cũ
+    }
 
     const dataSave = {
       name,
@@ -132,7 +144,7 @@ const updateProductService = async (productId, productData, userId, file) => {
       price,
       rating,
       location,
-      picture: profilePicture,
+      pictures: imageUrls,
       stock,
       categories,
       // currentDiscount: discountId || null,
