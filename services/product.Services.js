@@ -91,6 +91,8 @@ const updateProductService = async (productId, productData, userId, files = []) 
 
     let { name, description, price, rating, location, stock, categories, pictures } = productData;
 
+    console.log("pictures", pictures);
+
     let discountId = null;
 
     // if (currentDiscount) {

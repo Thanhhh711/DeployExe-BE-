@@ -61,7 +61,7 @@ const updateProduct = async (req, res) => {
     const { id } = req.params;
     const productData = req.body;
 
-    console.log("userId", req.user.id);
+    console.log("productData", productData);
 
     const userId = req.user.id;
 
