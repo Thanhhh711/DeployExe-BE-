@@ -14,11 +14,13 @@ const orderSchema = new mongoose.Schema({
   ],
   totalPrice: { type: Number, required: true },
   feeShipping: { type: Number, required: true },
+
   paymentMethod: {
     type: String,
     enum: ["Wallet", "Cash", "Stripe", "QR"],
     required: true,
   },
+
   statusPayment: {
     type: String,
     enum: ["Pending", "Paid", "Failed"],

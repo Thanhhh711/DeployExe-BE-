@@ -7,7 +7,7 @@ const productSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     rating: { type: Number },
     location: { type: String },
-    picture: { type: String, default: "" },
+    pictures: { type: [String], default: [] },
     stock: { type: Number, default: 0 },
     categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
     editby: {

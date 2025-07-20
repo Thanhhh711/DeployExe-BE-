@@ -244,7 +244,10 @@ const updateStatusRequest = async (req, res) => {
     } else if (request.type === "refund" && request.order) {
       updateRefundStatus(request.order, "statusOrder");
       await request.order.save();
-      if (request.order.statusOrder === "Refund Approved" && request.order.paymentMethod === "Stripe") {
+      if (
+        request.order.statusOrder === "Refund Approved" &&
+        ["Stripe", "QR", "Wallet", "Cash"].includes(request.order.paymentMethod)
+      ) {
         const refundAmount = Number(request.order.totalPrice) || 0;
 
         const wallet = await Wallet.findOneAndUpdate(

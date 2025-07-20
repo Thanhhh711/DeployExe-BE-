@@ -26,7 +26,7 @@ router.post(
   "/create",
   authenticateToken,
   authorizeRole("admin"),
-  upload.single("profilePicture"),
+  upload.array("pictures", 5),
   productValidator,
   createProductController
 );

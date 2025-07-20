@@ -15,9 +15,17 @@ const createProductService = async (productData, file) => {
       throw new Error("Không thể thêm ảnh sản phẩm.");
     }
 
-    const fileUri = getDataUri(profilePicture);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri);
-    const picture = cloudResponse.url;
+    // const fileUri = getDataUri(profilePicture);
+    // const cloudResponse = await cloudinary.uploader.upload(fileUri);
+    // const picture = cloudResponse.url;
+
+    const uploadPromises = files.map((file) => {
+      const fileUri = getDataUri(file);
+      return cloudinary.uploader.upload(fileUri);
+    });
+
+    const uploadResults = await Promise.all(uploadPromises);
+    const pictures = uploadResults.map((res) => res.url); // mảng URL
 
     let discountId = null;
 
@@ -48,7 +56,7 @@ const createProductService = async (productData, file) => {
       price,
       rating,
       location,
-      picture,
+      pictures,
       stock,
       categories,
       // currentDiscount: discountId || null,
