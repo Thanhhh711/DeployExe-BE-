@@ -23,6 +23,8 @@ const createOrderMiddleware = async (req, res, next) => {
   const userId = req.user.id;
 
   try {
+    console.log("address", address);
+
     let totalPrice = 0;
     const items = [];
 
