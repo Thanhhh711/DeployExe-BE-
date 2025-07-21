@@ -26,7 +26,7 @@ router.post(
   "/create",
   authenticateToken,
   authorizeRole("admin"),
-  upload.array("pictures", 5),
+  upload.single("profilePicture"),
   productValidator,
   createProductController
 );
@@ -35,7 +35,7 @@ router.put(
   "/update/:id",
   authenticateToken,
   authorizeRole("admin"),
-  upload.array("pictures", 5),
+  upload.single("profilePicture"),
   productValidator,
   updateProduct
 );

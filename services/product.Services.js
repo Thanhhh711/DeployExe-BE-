@@ -6,7 +6,7 @@ const { cloudinary } = require("../utils/cloudinary");
 const { getDataUri } = require("../utils/datauri");
 const { calculateFinalPrice } = require("../utils/utils");
 
-const createProductService = async (productData, files) => {
+const createProductService = async (productData, file) => {
   try {
     const { name, description, price, rating, location, stock, categories } = productData;
     const profilePicture = file;
@@ -15,17 +15,9 @@ const createProductService = async (productData, files) => {
       throw new Error("Không thể thêm ảnh sản phẩm.");
     }
 
-    // const fileUri = getDataUri(profilePicture);
-    // const cloudResponse = await cloudinary.uploader.upload(fileUri);
-    // const picture = cloudResponse.url;
-
-    const uploadPromises = files.map((file) => {
-      const fileUri = getDataUri(file);
-      return cloudinary.uploader.upload(fileUri);
-    });
-
-    const uploadResults = await Promise.all(uploadPromises);
-    const pictures = uploadResults.map((res) => res.url); // mảng URL
+    const fileUri = getDataUri(profilePicture);
+    const cloudResponse = await cloudinary.uploader.upload(fileUri);
+    const picture = cloudResponse.url;
 
     let discountId = null;
 
@@ -56,7 +48,7 @@ const createProductService = async (productData, files) => {
       price,
       rating,
       location,
-      pictures,
+      picture,
       stock,
       categories,
       // currentDiscount: discountId || null,
@@ -79,7 +71,7 @@ const createProductService = async (productData, files) => {
   }
 };
 
-const updateProductService = async (productId, productData, userId, files = []) => {
+const updateProductService = async (productId, productData, userId, file) => {
   try {
     let userEdit = await User.findById(userId).select("-password");
 
@@ -89,9 +81,7 @@ const updateProductService = async (productId, productData, userId, files = []) 
       throw new Error("Không tìm thấy người dùng này");
     }
 
-    let { name, description, price, rating, location, stock, categories, pictures } = productData;
-
-    console.log("pictures", pictures);
+    let { name, description, price, rating, location, stock, categories, profilePicture } = productData;
 
     let discountId = null;
 
@@ -112,33 +102,21 @@ const updateProductService = async (productId, productData, userId, files = []) 
     //   discountId = discount._id;
     // }
 
-    // if (!profilePicture) {
-    //   if (file && typeof file !== "string") {
-    //     const fileUri = getDataUri(file);
-    //     const cloudResponse = await cloudinary.uploader.upload(fileUri);
-    //     profilePicture = cloudResponse.url;
-    //   }
+    if (!profilePicture) {
+      if (file && typeof file !== "string") {
+        const fileUri = getDataUri(file);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri);
+        profilePicture = cloudResponse.url;
+      }
 
-    //   // ✅ Nếu là string URL (ảnh cũ)
-    //   else if (typeof file === "string" && file.startsWith("http")) {
-    //     profilePicture = file;
-    //   } else {
-    //     throw new Error("Không thể thêm ảnh sản phẩm.");
-    //   }
-    // }
-    // const finalPrice = calculateFinalPrice({ price, currentDiscount: discountId });
-
-    let imageUrls = pictures || []; // ảnh cũ
-    if (files.length > 0) {
-      const uploadResults = await Promise.all(
-        files.map(async (file) => {
-          const fileUri = getDataUri(file);
-          const cloudResponse = await cloudinary.uploader.upload(fileUri);
-          return cloudResponse.url;
-        })
-      );
-      imageUrls = [...imageUrls, ...uploadResults]; // nối ảnh mới với ảnh cũ
+      // ✅ Nếu là string URL (ảnh cũ)
+      else if (typeof file === "string" && file.startsWith("http")) {
+        profilePicture = file;
+      } else {
+        throw new Error("Không thể thêm ảnh sản phẩm.");
+      }
     }
+    // const finalPrice = calculateFinalPrice({ price, currentDiscount: discountId });
 
     const dataSave = {
       name,
@@ -146,7 +124,7 @@ const updateProductService = async (productId, productData, userId, files = []) 
       price,
       rating,
       location,
-      pictures: imageUrls,
+      picture: profilePicture,
       stock,
       categories,
       // currentDiscount: discountId || null,
